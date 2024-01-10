@@ -7,15 +7,11 @@ const expressPort: number = 3000;
 
 const mqttManager = new MqttManager();
 
-
 app.post("/configuration", (req, res) => {
   console.log("getting new configuration");
   try {
     res.send("done");
-    mqttManager.mqttConfiguration(
-      req.body.Source,
-      req.body.Destination
-    );
+    mqttManager.mqttConfiguration(req.body.Source, req.body.Destination);
   } catch (error: any) {
     res.send(error.message);
   }
@@ -23,6 +19,8 @@ app.post("/configuration", (req, res) => {
 
 app.get("/status", (req, res) => {
   console.log("status");
+  const connectedClients = mqttManager.connectedClients();
+  res.send(connectedClients);
   try {
   } catch (error: any) {
     res.send(error.message);
