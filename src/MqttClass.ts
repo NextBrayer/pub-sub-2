@@ -25,7 +25,10 @@ export class MqttTransmitter {
       username,
       password
     );
-    if (isAlreadyConnectedClient) return isAlreadyConnectedClient;
+    if (isAlreadyConnectedClient) {
+      console.log("already  connected to", host);
+      return isAlreadyConnectedClient;
+    }
     console.log("trying to connect", host);
     return new Promise<mqtt.MqttClient | null>((resolve) => {
       const client = mqtt.connect({
@@ -76,7 +79,7 @@ export class MqttTransmitter {
   }
 
   async getConnectedClients() {
-    const connectedClient = this.connectedClinets.map((client) => {
+    const connectedClient =  this.connectedClinets.map((client) => {
       if (client.client.connected)
         return {
           id: client.id,
@@ -84,7 +87,6 @@ export class MqttTransmitter {
           username: client.username,
           password: client.password,
         };
-      else return;
     });
     return connectedClient;
   }
@@ -106,4 +108,3 @@ export class MqttTransmitter {
     return undefined;
   }
 }
-
