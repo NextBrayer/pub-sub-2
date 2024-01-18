@@ -27,6 +27,35 @@ app.get("/status", (req, res) => {
   }
 });
 
+app.post("/pause", (req, res) => {
+  console.log("disconnect");
+  mqttManager.pause(req.body.name, req.body.topic);
+  res.send("ok");
+  try {
+  } catch (error: any) {
+    res.send(error.message);
+  }
+});
+
+app.post("/disconnect", (req, res) => {
+  console.log("disconnect");
+  mqttManager.disconnect(req.body.name);
+  res.send("ok");
+  try {
+  } catch (error: any) {
+    res.send(error.message);
+  }
+});
+app.post("/resume", (req, res) => {
+  console.log("disconnect");
+  mqttManager.resume(req.body.name, req.body.topic);
+  res.send("ok");
+  try {
+  } catch (error: any) {
+    res.send(error.message);
+  }
+});
+
 app.listen(expressPort, () => {
   console.log("express listening on port", expressPort);
 });

@@ -13,6 +13,9 @@ export class MqttManager {
   private _connectedClients: {
     type: string;
     name: string;
+    url: string;
+    username?: string;
+    password?: string;
     client: _MqttClient;
   }[] = [];
   constructor() {
@@ -29,35 +32,23 @@ export class MqttManager {
   }
 
   async handelmqttSource(config: mqttConfig) {
-    const subscriber = new _MqttClient({ host: config.url });
+    let subscriber = new _MqttClient({ host: config.url });
+    const exist = this.find_if_exist(config, "source");
+    if (exist === -1) {
+      await subscriber.connect();
+      this.add_to_list(config, "source", subscriber);
+    } else subscriber = this._connectedClients[exist].client;
 
-    const client = await subscriber.connect();
-
-    if (client) {
-      this._connectedClients.push({
-        type: "source",
-        name: config.name,
-        client: subscriber,
-      });
-      subscriber.subscribe(config.topic);
-    }
+    subscriber.subscribe(config.topic);
   }
 
   async handelmqttDestination(config: mqttConfig) {
-    const publisher = new _MqttClient({ host: config.url });
-
-    const client = await publisher.connect();
-
-    if (client) {
-      this._connectedClients.push({
-        type: "source",
-        name: config.name,
-        client: publisher,
-      });
-      setInterval(() => {
-        publisher.publish(config.topic, "hello");
-      }, 1000);
-    }
+    let publisher = new _MqttClient({ host: config.url });
+    const exist = this.find_if_exist(config, "destinaton");
+    if (exist === -1) {
+      await publisher.connect();
+      this.add_to_list(config, "destinaton", publisher);
+    } else publisher = this._connectedClients[exist].client;
   }
 
   connectedClients() {
@@ -66,5 +57,50 @@ export class MqttManager {
       type: client.type,
     }));
     return connected;
+  }
+
+  disconnect(name: string) {
+    const element = this._connectedClients.find(
+      (element) => element.name === name
+    );
+    element?.client.disconnect();
+    this._connectedClients = this._connectedClients.filter(
+      (element) => element.name != name
+    );
+    return this._connectedClients
+  }
+
+  pause(name: string, topic: string) {
+    const element = this._connectedClients.find(
+      (element) => element.name === name
+    );
+    element?.client.unSubscribe(topic);
+  }
+
+  resume(name: string, topic: string) {
+    const element = this._connectedClients.find(
+      (element) => element.name === name
+    );
+    element?.client.subscribe(topic);
+  }
+  find_if_exist(config: mqttConfig, type: string) {
+    return this._connectedClients.findIndex(
+      (element) =>
+        element.url === config.url &&
+        element.username === config.username &&
+        element.password === config.password &&
+        element.type === type
+    );
+  }
+
+  add_to_list(config: mqttConfig, type: string, client: _MqttClient) {
+    this._connectedClients.push({
+      type: type,
+      name: config.name,
+      url: config.url,
+      username: config.username,
+      password: config.password,
+      client: client,
+    });
   }
 }

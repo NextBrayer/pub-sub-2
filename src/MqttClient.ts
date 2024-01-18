@@ -59,11 +59,19 @@ export class _MqttClient {
       console.log("unsubscribed from", topic);
     }
   }
-
   publish(topic: string, message: any) {
     if (this.client) {
       console.log("publishing to ", topic, message.toString());
       this.client.publish(topic, message.toString());
+    }
+  }
+
+  disconnect() {
+    if (this.client) {
+      console.log("disconnecting");
+      this.client.end(() => {
+        console.log("connection ended");
+      });
     }
   }
 
