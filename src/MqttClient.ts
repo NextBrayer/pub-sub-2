@@ -12,12 +12,14 @@ export class _MqttClient {
   private username: string;
   private password: string;
   private client: mqtt.MqttClient | null;
+  public valueHolder: any;
 
   constructor(metadat: mqttData) {
     this.host = metadat.host;
     this.username = metadat.username || "";
     this.password = metadat.password || "";
     this.client = null;
+    this.valueHolder = null;
   }
 
   async connect() {
@@ -49,14 +51,16 @@ export class _MqttClient {
       console.log("subscribed to", topic);
       this.client.on("message", (topic, message) => {
         console.log(topic, message.toString());
+        this.valueHolder.setValue(message.toString());
       });
     }
   }
 
   unSubscribe(topic: string) {
     if (this.client) {
-      this.client.unsubscribe(topic);
-      console.log("unsubscribed from", topic);
+      this.client.unsubscribeAsync(topic).then(() => {
+        console.log("unsubscribed from", topic);
+      });
     }
   }
   publish(topic: string, message: any) {
