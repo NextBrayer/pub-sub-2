@@ -1,3 +1,7 @@
+import { DataShare } from "./DataShare";
+import { _MqttClient } from "./MqttClient";
+import { SerialClient } from "./SerialClient";
+
 interface mqtt {
   type: string;
   url: string;
@@ -6,22 +10,35 @@ interface mqtt {
   topic: string;
 }
 
-interface connectedClients {
-  name: string;
-  Source ? : mqtt | serial
-  Destination ? : mqtt | serial
+interface serial {
+  type: string;
+  port: string;
+  baudRate: number;
 }
-
+interface Clients {
+  name: string;
+  valueHolder: DataShare;
+  source?: {
+    type: string;
+    url?: string;
+    topic?: string;
+    port?: string;
+    baudRate?: number;
+    client: _MqttClient | SerialClient;
+  };
+  destination?: {
+    type: string;
+    url?: string;
+    topic?: string;
+    port?: string;
+    baudRate?: number;
+    client: _MqttClient | SerialClient;
+  };
+}
 
 enum IN_OUT {
   SOURCE,
   DESTINATION,
 }
 
-interface serial {
-  type: string;
-  port: string;
-  baudRate: number;
-}
-
-export { mqtt, serial, connectedClients, IN_OUT };
+export { mqtt, serial, Clients, IN_OUT };

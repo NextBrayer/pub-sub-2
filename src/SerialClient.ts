@@ -41,4 +41,8 @@ export class SerialClient {
   write(message: any) {
     this.serial!.write(message);
   }
+
+  isConnected(){
+    return this.serial!.isOpen
+  }
 }

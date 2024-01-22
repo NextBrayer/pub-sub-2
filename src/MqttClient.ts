@@ -56,13 +56,7 @@ export class _MqttClient {
     }
   }
 
-  unSubscribe(topic: string) {
-    if (this.client) {
-      this.client.unsubscribeAsync(topic).then(() => {
-        console.log("unsubscribed from", topic);
-      });
-    }
-  }
+
   publish(topic: string, message: any) {
     if (this.client) {
       console.log("publishing to ", topic, message.toString());
