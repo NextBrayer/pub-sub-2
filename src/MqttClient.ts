@@ -56,7 +56,6 @@ export class _MqttClient {
     }
   }
 
-
   publish(topic: string, message: any) {
     if (this.client) {
       console.log("publishing to ", topic, message.toString());

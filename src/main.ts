@@ -30,6 +30,7 @@ app.get("/status", (req, res) => {
     res.send(error.message);
   }
 });
+
 app.get("/pause", (req, res) => {
   console.log("client paused");
   ManagerObject.pauseClient(req.body.name);
@@ -39,6 +40,7 @@ app.get("/pause", (req, res) => {
     res.send(error.message);
   }
 });
+
 app.get("/resume", (req, res) => {
   console.log("resume client");
   ManagerObject.resumeClient(req.body.name);
