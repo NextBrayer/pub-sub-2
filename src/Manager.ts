@@ -109,7 +109,7 @@ export class Manager {
       });
     else return;
   }
-  
+
   async handel_serial_destination(
     name: string,
     destination: serial,
@@ -131,24 +131,45 @@ export class Manager {
     else return;
   }
 
-  getClients() {
-    const connected = this._Clients.map((client) => ({
+  get_all_clients() {
+    const clients = this._Clients.map((client) => ({
       name: client.name,
-      source: {
-        type: client.source?.type,
-        url_port: client.source?.port || client.source?.url,
-        baudRate_topic: client.source?.baudRate || client.source?.topic,
-        connected: client.source?.client.isConnected(),
-      },
-      destination: {
-        type: client.destination?.type,
-        url_port: client.destination?.port || client.destination?.url,
-        baudRate_topic:
-          client.destination?.baudRate || client.destination?.topic,
-        connected: client.destination?.client.isConnected(),
-      },
+      source: this.return_client_formated(client.source),
+      destination: this.return_client_formated(client.destination),
     }));
-    return connected;
+    return clients;
+  }
+
+  get_connected_clients() {
+    const connected_clients = this._Clients.map((client) => {
+      if (
+        client.destination?.client.isConnected() &&
+        client.source?.client.isConnected()
+      )
+        return {
+          name: client.name,
+          source: this.return_client_formated(client.source),
+          destination: this.return_client_formated(client.destination),
+        };
+    });
+    return connected_clients;
+  }
+  
+  return_client_formated(data: any) {
+    if (data.type === "mqtt")
+      return {
+        type: data.type,
+        url: data.url,
+        topic: data.topic,
+        connected: data.client.isConnected(),
+      };
+    else
+      return {
+        type: data.type,
+        port: data.port,
+        baudRate: data.baudRate,
+        connected: data.client.isConnected(),
+      };
   }
 
   add_client(
@@ -169,12 +190,12 @@ export class Manager {
     else this._Clients[isAlreadySaved].destination = destination;
   }
 
-  pauseClient(name: string) {
+  pause_client(name: string) {
     const client = this._Clients.filter((client) => client.name === name)[0];
     client.valueHolder.pauseNotification();
   }
 
-  resumeClient(name: string) {
+  resume_client(name: string) {
     const client = this._Clients.filter((client) => client.name === name)[0];
     client.valueHolder.resumeNotification();
   }
