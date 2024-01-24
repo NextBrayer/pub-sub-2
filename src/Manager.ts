@@ -1,4 +1,6 @@
-import { _MqttClient, _SerialClient } from "./Client";
+import { _MqttClient } from "./mqtt_client";
+import { _SerialClient } from "./serial_client";
+
 
 export class Manager {
   constructor() {
@@ -9,37 +11,7 @@ export class Manager {
     let receiver: any;
     let sender: any;
 
-    if (source.type === "mqtt") {
-      receiver = new _MqttClient({
-        host: source.host,
-        topic: source.topic,
-        onData: (data) => {
-          sender.send(data);
-        },
-        isSender: false,
-      });
-    } else {
-      receiver = new _SerialClient({
-        port: source.port,
-        baudRate: source.baudRate,
-        onData: (data) => {
-          sender.send(data);
-        },
-        isSender: false,
-      });
-    }
 
-    if (destination.type === "mqtt") {
-      sender = new _MqttClient({
-        host: destination.host,
-        topic: destination.topic,
-      });
-    } else {
-      sender = new _SerialClient({
-        port: destination.port,
-        baudRate: destination.baudRate,
-      });
-    }
 
     // connect
     receiver.connect();
