@@ -1,6 +1,10 @@
 import express from "express";
 import { Manager } from "./Manager";
 
+import playground from "./test";
+
+async function main() {
+  
 const app = express();
 app.use(express.json());
 const expressPort: number = 3000;
@@ -54,3 +58,8 @@ app.get("/resume", (req, res) => {
 app.listen(expressPort, () => {
   console.log("express listening on port", expressPort);
 });
+
+}
+
+// main();
+playground();
